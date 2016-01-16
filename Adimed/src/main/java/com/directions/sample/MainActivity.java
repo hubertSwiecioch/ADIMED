@@ -5,7 +5,10 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -19,6 +22,7 @@ import com.directions.route.AbstractRouting;
 import com.directions.route.Route;
 import com.directions.route.Routing;
 import com.directions.route.RoutingListener;
+import com.directions.sample.utils.Util;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -40,7 +44,6 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -54,14 +57,14 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
     AutoCompleteTextView starting;
     @InjectView(R.id.destination)
     AutoCompleteTextView destination;
-    @InjectView(R.id.send)
+    @InjectView(R.id.fab)
     ImageView send;
     private String LOG_TAG = "MyActivity";
     protected GoogleApiClient mGoogleApiClient;
     private PlaceAutoCompleteAdapter mAdapter;
     private ProgressDialog progressDialog;
     private ArrayList<Polyline> polylines;
-    private int[] colors = new int[]{R.color.primary_dark,R.color.primary,R.color.primary_light,R.color.accent,R.color.primary_dark_material_light};
+    private int[] colors = new int[]{R.color.primary_dark,R.color.primary,R.color.primary_light,R.color.primary_dark_material_light};
 
 
     private static final LatLngBounds BOUNDS_JAMAICA= new LatLngBounds(new LatLng(-57.965341647205726, 144.9987719580531),
@@ -74,8 +77,20 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
         ButterKnife.inject(this);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+
+        //getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         polylines = new ArrayList<>();
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -111,8 +126,8 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
         });
 
 
-        CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(18.013610, -77.498803));
-        CameraUpdate zoom = CameraUpdateFactory.zoomTo(16);
+        CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(52.0829344, 18.9264378));
+        CameraUpdate zoom = CameraUpdateFactory.zoomTo(6);
 
         map.moveCamera(center);
         map.animateCamera(zoom);
@@ -126,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
                     public void onLocationChanged(Location location) {
 
                         CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),location.getLongitude()));
-                        CameraUpdate zoom = CameraUpdateFactory.zoomTo(16);
+                        CameraUpdate zoom = CameraUpdateFactory.zoomTo(8);
 
                         map.moveCamera(center);
                         map.animateCamera(zoom);
@@ -154,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
                     @Override
                     public void onLocationChanged(Location location) {
                         CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),location.getLongitude()));
-                        CameraUpdate zoom = CameraUpdateFactory.zoomTo(16);
+                        CameraUpdate zoom = CameraUpdateFactory.zoomTo(8);
 
                         map.moveCamera(center);
                         map.animateCamera(zoom);
@@ -306,7 +321,7 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
 
     }
 
-    @OnClick(R.id.send)
+    @OnClick(R.id.fab)
     public void sendRequest()
     {
         if(Util.Operations.isOnline(this))
@@ -315,7 +330,8 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
         }
         else
         {
-            Toast.makeText(this,"No internet connectivity",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Brak połączenia z internetem", Toast.LENGTH_SHORT).show();
+
         }
     }
 
@@ -331,25 +347,25 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
                 }
                 else
                 {
-                    Toast.makeText(this,"Please choose a starting point.",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this,"Proszę wybrać punkt początkowy.",Toast.LENGTH_SHORT).show();
                 }
             }
             if(end==null)
             {
                 if(destination.getText().length()>0)
                 {
-                    destination.setError("Choose location from dropdown.");
+                    destination.setError("Wybierz lokację z listy.");
                 }
                 else
                 {
-                    Toast.makeText(this,"Please choose a destination.",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this,"Proszę wybrać cel.",Toast.LENGTH_SHORT).show();
                 }
             }
         }
         else
         {
-            progressDialog = ProgressDialog.show(this, "Please wait.",
-                    "Fetching route information.", true);
+            progressDialog = ProgressDialog.show(this, "Proszę czekać.",
+                    "Pobieranie informacji o trasie.", true);
             Routing routing = new Routing.Builder()
                     .travelMode(AbstractRouting.TravelMode.DRIVING)
                     .withListener(this)
@@ -365,7 +381,7 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
     public void onRoutingFailure() {
         // The Routing request failed
         progressDialog.dismiss();
-        Toast.makeText(this,"Something went wrong, Try again", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this,"Coś poszło nie tak, spróbuj ponownie", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -378,9 +394,10 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
     {
         progressDialog.dismiss();
         CameraUpdate center = CameraUpdateFactory.newLatLng(start);
-        CameraUpdate zoom = CameraUpdateFactory.zoomTo(16);
+        CameraUpdate zoom = CameraUpdateFactory.zoomTo(10);
 
         map.moveCamera(center);
+        map.moveCamera(zoom);
 
 
         if(polylines.size()>0) {
@@ -403,7 +420,8 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
             Polyline polyline = map.addPolyline(polyOptions);
             polylines.add(polyline);
 
-            Toast.makeText(getApplicationContext(),"Route "+ (i+1) +": distance - "+ route.get(i).getDistanceValue()+": duration - "+ route.get(i).getDurationValue(),Toast.LENGTH_SHORT).show();
+
+            Toast.makeText(getApplicationContext(),"Trasa "+ (i+1) +": dystans - "+ route.get(i).getDistanceValue()+": czas - "+ route.get(i).getDurationValue(),Toast.LENGTH_SHORT).show();
         }
 
         // Start marker
@@ -422,7 +440,7 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
 
     @Override
     public void onRoutingCancelled() {
-        Log.i(LOG_TAG, "Routing was cancelled.");
+        Log.i(LOG_TAG, "Wyliczanie trasy zostało anulowane.");
     }
 
     @Override

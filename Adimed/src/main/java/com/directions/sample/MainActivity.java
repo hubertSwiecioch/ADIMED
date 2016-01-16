@@ -28,7 +28,6 @@ import com.directions.route.Routing;
 import com.directions.route.RoutingListener;
 import com.directions.sample.utils.FareCalculation;
 import com.directions.sample.utils.Util;
-import com.directions.sample.volley.DistanceResponse;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;

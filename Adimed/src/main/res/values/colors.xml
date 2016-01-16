@@ -6,8 +6,8 @@
     <color name="icons">#FFFFFF</color>
     <color name="divider">#ffffff</color>
     <color name="primary_light">#6473bf</color>
-    <color name="primary">#3a4cb4</color>
-    <color name="primary_dark">#2838a3</color>
+    <color name="primary">#3F51B5</color>
+    <color name="primary_dark">#303F9F</color>
     <color name="accent">#f4000c</color>
     <color name="primary_text">#ffffff</color>
     <color name="foreground_material_light">#ffffff</color>

@@ -3,7 +3,7 @@ package com.directions.sample.volley;
 /**
  * Created by user on 2016-01-15.
  */
-public class DistanceResponse {
+public class RouteResult {
 
     private String distanceText;
     private String distanceValue;
@@ -12,6 +12,15 @@ public class DistanceResponse {
     private String status;
     private String destinationAddresses;
     private String originAddresses;
+    private String fareCost;
+
+    public String getFareCost() {
+        return fareCost;
+    }
+
+    public void setFareCost(String fareCost) {
+        this.fareCost = fareCost;
+    }
 
     public String getDistanceText() {
         return distanceText;

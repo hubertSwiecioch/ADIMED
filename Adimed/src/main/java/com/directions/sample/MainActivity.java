@@ -5,8 +5,12 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -26,8 +30,10 @@ import com.directions.route.AbstractRouting;
 import com.directions.route.Route;
 import com.directions.route.Routing;
 import com.directions.route.RoutingListener;
+import com.directions.sample.adapters.ResultsAdapter;
 import com.directions.sample.utils.FareCalculation;
 import com.directions.sample.utils.Util;
+import com.directions.sample.volley.RouteResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -53,6 +59,10 @@ import com.directions.sample.components.SlidingUpPanelLayout.PanelSlideListener;
 import com.directions.sample.components.SlidingUpPanelLayout.PanelState;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -89,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
     private Button fareButton;
 
 
-    private TextView estimated_fare, tvTitle, tvDistance, tvTime;
+
     private EditText mParamedicCount, mParamedicHourCost, mKilometerCost, mAdditionalTime;
     private Switch switchIsRetrun;
     private String distance = "";
@@ -98,6 +108,10 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
     private String durationText = "";
 
     private ScrollView scrollViewContent;
+
+    private List<RouteResult> routeResultsList;
+    private RecyclerView mRecyclerView;
+    private ResultsAdapter adapter;
 
 
     /**
@@ -119,20 +133,16 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
         });
         ButterKnife.inject(this);
         mGrabArrow = (ImageView) findViewById(R.id.grab_arrow);
-        scrollViewContent = (ScrollView) findViewById(R.id.scrollViewContent);
+//        scrollViewContent = (ScrollView) findViewById(R.id.scrollViewContent);
         mParamedicCount = (EditText) findViewById(R.id.edit1);
         mParamedicHourCost = (EditText) findViewById(R.id.edit2);
         mKilometerCost = (EditText) findViewById(R.id.edit3);
         mAdditionalTime = (EditText) findViewById(R.id.edit4);
         switchIsRetrun= (Switch) findViewById(R.id.switchIsReturn);
 
+
+
         initDefaultValues();
-
-        estimated_fare = (TextView) findViewById(R.id.estimated_fare);
-        tvTitle = (TextView) findViewById(R.id.tvTitle);
-        tvDistance = (TextView) findViewById(R.id.tvDistance);
-        tvTime = (TextView) findViewById(R.id.tvTime);
-
 
 
         mLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
@@ -166,7 +176,10 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
         });
 
 
-
+        // Initialize recycler view
+        mRecyclerView = (RecyclerView)findViewById(R.id.list);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
 
         //getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -428,26 +441,37 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
         float kilometerCost = Float.valueOf(mKilometerCost.getText().toString());
         int additionalTime = Integer.valueOf(mAdditionalTime.getText().toString());
 
-        String estimatedFare = FareCalculation.estimatedFare(dur_in_hr, dist_in_km,paramedicsCount,paramedicHourCost,kilometerCost, additionalTime, switchIsRetrun.isChecked() );
+        String estimatedFare = FareCalculation.estimatedFare(dur_in_hr, dist_in_km, paramedicsCount, paramedicHourCost, kilometerCost, additionalTime, switchIsRetrun.isChecked());
+
+        RouteResult routeResult = new RouteResult();
+        routeResult.setDistanceText(route.getDistanceText());
+        routeResult.setDurationText(route.getDurationText());
+        routeResult.setDurationValue(String.valueOf(route.getDurationValue()));
+        routeResult.setDurationValue(String.valueOf(route.getDurationValue()));
+        routeResult.setStatus("OK");
+
+        routeResult.setFareCost(estimatedFare);
 
 
-        tvDistance.setVisibility(View.VISIBLE);
-        tvDistance.setText("Szacowany dystans: " + route.getDistanceText());
+        routeResultsList.add(routeResult);
 
-        tvTime.setVisibility(View.VISIBLE);
-        tvTime.setText("Szacowany czas jazdy: " + route.getDurationText());
+//        tvDistance.setVisibility(View.VISIBLE);
+//        tvDistance.setText("Szacowany dystans: " + route.getDistanceText());
+//
+//        tvTime.setVisibility(View.VISIBLE);
+//        tvTime.setText("Szacowany czas jazdy: " + route.getDurationText());
 
-        ShowFare(estimatedFare);
-        scrollViewContent.fullScroll(View.FOCUS_DOWN);
+//        ShowFare(estimatedFare);
+//        scrollViewContent.fullScroll(View.FOCUS_DOWN);
 
     }
 
     private void ShowFare(String fare) {
 
         // visible the amount's text view and set the estimate fare to the text view.
-        tvTitle.setVisibility(View.VISIBLE);
-        estimated_fare.setVisibility(View.VISIBLE);
-        estimated_fare.setText(fare);
+//        tvTitle.setVisibility(View.VISIBLE);
+//        estimated_fare.setVisibility(View.VISIBLE);
+//        estimated_fare.setText(fare);
 
 
     }
@@ -571,6 +595,8 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
 
         polylines = new ArrayList<>();
         //add route(s) to the map.
+
+        routeResultsList = new ArrayList<>();
         for (int i = 0; i <route.size(); i++) {
 
             //In case of more than 5 alternative routes
@@ -589,6 +615,11 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
             Toast.makeText(getApplicationContext(),"Trasa "+ (i+1) +": dystans - "+ route.get(i).getDistanceText()+": czas - "+ route.get(i).getDurationText(),Toast.LENGTH_SHORT).show();
         }
 
+        Log.i(TAG, "list" + routeResultsList.get(0).getFareCost());
+        adapter = new ResultsAdapter(MainActivity.this, routeResultsList);
+        mRecyclerView.setAdapter(adapter);
+
+
         // Start marker
         MarkerOptions options = new MarkerOptions();
         options.position(start);
@@ -600,6 +631,8 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
         options.position(end);
         options.icon(BitmapDescriptorFactory.fromResource(R.drawable.end_green));
         map.addMarker(options);
+
+
 
     }
 

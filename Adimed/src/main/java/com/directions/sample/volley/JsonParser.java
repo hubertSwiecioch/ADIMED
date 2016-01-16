@@ -1,7 +1,6 @@
 package com.directions.sample.volley;
 
 import android.util.Log;
-import android.view.View;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,9 +17,9 @@ public class JsonParser {
 
     public static final String TAG = "JsonParser";
 
-    public static DistanceResponse parseResponse(String response){
+    public static RouteResult parseResponse(String response){
 
-       DistanceResponse distanceResponse = new DistanceResponse();
+       RouteResult routeResult = new RouteResult();
 
         if (response != null) {
 
@@ -28,13 +27,13 @@ public class JsonParser {
                 JSONObject jObject = new JSONObject(response);
                 Log.d(TAG, "response " + response);
 
-                distanceResponse.setStatus(jObject.getString("status"));
+                routeResult.setStatus(jObject.getString("status"));
 
                 // checking the status
                 if (jObject.getString("status").equals("OK")) {
 
-                    distanceResponse.setDestinationAddresses(jObject.getString("destination_addresses"));
-                    distanceResponse.setOriginAddresses(jObject.getString("origin_addresses"));
+                    routeResult.setDestinationAddresses(jObject.getString("destination_addresses"));
+                    routeResult.setOriginAddresses(jObject.getString("origin_addresses"));
 
                     // Parsing the value from row array
                     JSONArray jaArray = jObject.getJSONArray("rows");
@@ -56,11 +55,11 @@ public class JsonParser {
                             JSONObject jobj_duration = jobj1
                                     .getJSONObject("duration");
 
-                            distanceResponse.setDistanceValue(jobj_distance.getString("value"));
-                            distanceResponse.setDurationValue(jobj_duration.getString("value"));
+                            routeResult.setDistanceValue(jobj_distance.getString("value"));
+                            routeResult.setDurationValue(jobj_duration.getString("value"));
 
-                            distanceResponse.setDistanceText(jobj_distance.getString("text"));
-                            distanceResponse.setDurationText(jobj_duration.getString("text"));
+                            routeResult.setDistanceText(jobj_distance.getString("text"));
+                            routeResult.setDurationText(jobj_duration.getString("text"));
 
                         }
 
@@ -75,6 +74,6 @@ public class JsonParser {
 
         }
 
-        return distanceResponse;
+        return routeResult;
     }
 }

@@ -18,6 +18,8 @@
 
     <include layout="@layout/map_layout" />
 
+
+
     <include layout="@layout/fare_layout" />
 
 

@@ -6,7 +6,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -15,7 +14,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ScrollView;
+import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.directions.route.AbstractRouting;
@@ -23,6 +27,7 @@ import com.directions.route.Route;
 import com.directions.route.Routing;
 import com.directions.route.RoutingListener;
 import com.directions.sample.utils.Util;
+import com.directions.sample.volley.DistanceResponse;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -43,6 +48,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import com.directions.sample.components.SlidingUpPanelLayout;
+import com.directions.sample.components.SlidingUpPanelLayout.PanelSlideListener;
+import com.directions.sample.components.SlidingUpPanelLayout.PanelState;
+
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
@@ -50,6 +59,7 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity implements RoutingListener, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
+    private static final String TAG ="MainActivity" ;
     protected GoogleMap map;
     protected LatLng start;
     protected LatLng end;
@@ -70,6 +80,28 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
     private static final LatLngBounds BOUNDS_JAMAICA= new LatLngBounds(new LatLng(-57.965341647205726, 144.9987719580531),
             new LatLng(72.77492067739843, -9.998857788741589));
 
+    private SlidingUpPanelLayout mLayout;
+    private ImageView mGrabArrow;
+
+    private String fromAddress = "";
+    private String toAddress = "";
+
+    private Button fareButton;
+
+
+    private DistanceResponse distanceResponse;
+
+    private TextView estimated_fare, tvTitle, tvDistance, tvTime;
+    private EditText mParamedicCount, mParamedicHourCost, mKilometerCost, mAdditionalTime;
+    private Switch switchIsRetrun;
+    private String distance = "";
+    private String duration = "";
+    private String distanceText = "";
+    private String durationText = "";
+
+    private ScrollView scrollViewContent;
+
+
     /**
      * This activity loads a map and then displays the route and pushpins on it.
      */
@@ -88,6 +120,53 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
             }
         });
         ButterKnife.inject(this);
+        mGrabArrow = (ImageView) findViewById(R.id.grab_arrow);
+        scrollViewContent = (ScrollView) findViewById(R.id.scrollViewContent);
+        mParamedicCount = (EditText) findViewById(R.id.edit1);
+        mParamedicHourCost = (EditText) findViewById(R.id.edit2);
+        mKilometerCost = (EditText) findViewById(R.id.edit3);
+        mAdditionalTime = (EditText) findViewById(R.id.edit4);
+        switchIsRetrun= (Switch) findViewById(R.id.switchIsReturn);
+
+        estimated_fare = (TextView) findViewById(R.id.estimated_fare);
+        tvTitle = (TextView) findViewById(R.id.tvTitle);
+        tvDistance = (TextView) findViewById(R.id.tvDistance);
+        tvTime = (TextView) findViewById(R.id.tvTime);
+
+
+
+        mLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+        mLayout.setPanelSlideListener(new PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+                Log.i(TAG, "onPanelSlide, offset " + slideOffset);
+            }
+
+            @Override
+            public void onPanelExpanded(View panel) {
+                Log.i(TAG, "onPanelExpanded");
+                mGrabArrow.setBackground(getDrawable(R.drawable.ic_expand_more_white_48dp));
+            }
+
+            @Override
+            public void onPanelCollapsed(View panel) {
+                Log.i(TAG, "onPanelCollapsed");
+                mGrabArrow.setBackground(getDrawable(R.drawable.ic_expand_less_white_48dp));
+            }
+
+            @Override
+            public void onPanelAnchored(View panel) {
+                Log.i(TAG, "onPanelAnchored");
+            }
+
+            @Override
+            public void onPanelHidden(View panel) {
+                Log.i(TAG, "onPanelHidden");
+            }
+        });
+
+
+
 
 
         //getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -320,6 +399,7 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
         });
 
     }
+
 
     @OnClick(R.id.fab)
     public void sendRequest()

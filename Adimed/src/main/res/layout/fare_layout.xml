@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/primary"
+        android:paddingBottom="@dimen/vertical_page_margin"
+        android:paddingLeft="@dimen/horizontal_page_margin"
+        android:paddingRight="@dimen/horizontal_page_margin"
+        android:paddingTop="@dimen/vertical_page_margin">
+
+    <ImageView
+        android:id="@+id/grab_arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/ic_expand_less_white_48dp"/>
+
+
+    <ScrollView
+        android:id="@+id/scrollViewContent"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="5">
+
+    <RelativeLayout
+        android:id="@+id/relativeContetnt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:id="@+id/liczba_ratownikow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
+
+            <TextView
+                android:id="@+id/label1"
+                android:text="Liczba ratowników: "
+                android:textColor="@android:color/white"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <EditText
+                android:id="@+id/edit1"
+                android:layout_centerVertical="true"
+                android:inputType="number"
+                android:textColor="@android:color/white"
+                android:layout_toRightOf="@+id/label1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/koszt_godziny"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/liczba_ratownikow"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
+
+            <TextView
+                android:id="@+id/label2"
+                android:text="Koszt godziny ratownika (zł): "
+                android:textColor="@android:color/white"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <EditText
+                android:id="@+id/edit2"
+                android:layout_centerVertical="true"
+                android:inputType="numberDecimal"
+                android:textColor="@android:color/white"
+                android:layout_toRightOf="@+id/label2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/cena_za_kilometr"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/koszt_godziny"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
+
+            <TextView
+                android:id="@+id/label3"
+                android:text="Cena za kilometr (zł): "
+                android:textColor="@android:color/white"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <EditText
+                android:id="@+id/edit3"
+                android:layout_centerVertical="true"
+                android:inputType="numberDecimal"
+                android:textColor="@android:color/white"
+                android:layout_toRightOf="@+id/label3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/dodatkowy_czas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/cena_za_kilometr"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
+
+            <TextView
+                android:id="@+id/label4"
+                android:text="Dodatkowy czas (godziny): "
+                android:textColor="@android:color/white"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <EditText
+                android:id="@+id/edit4"
+                android:layout_centerVertical="true"
+                android:inputType="number"
+                android:textColor="@android:color/white"
+                android:layout_toRightOf="@+id/label4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/obie_strony"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/dodatkowy_czas"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
+
+            <TextView
+                android:id="@+id/label5"
+                android:text="Transport w obie strony"
+                android:textColor="@android:color/white"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <Switch
+                android:id="@+id/switchIsReturn"
+                android:layout_width="wrap_content"
+                android:textColor="@android:color/white"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"/>
+
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tvDistance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/obie_strony"
+            android:text="Całkowity dystans"
+            android:layout_centerHorizontal="true"
+            android:textColor="@android:color/holo_red_dark"
+            android:gravity="center"
+            android:visibility="gone"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"/>
+
+        <TextView
+            android:id="@+id/tvTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvDistance"
+            android:text="Szacowany czas jazdy"
+            android:layout_centerHorizontal="true"
+            android:textColor="@android:color/holo_red_dark"
+            android:gravity="center"
+            android:visibility="gone"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"/>
+
+
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvTime"
+            android:text="Szacowany Koszt"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:visibility="gone"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="#481554"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"/>
+
+        <TextView
+            android:id="@+id/estimated_fare"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvTitle"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:text=""
+            android:visibility="gone"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="#548156"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"/>
+
+    </RelativeLayout>
+
+    </ScrollView>
+
+</LinearLayout>
+

@@ -11,15 +11,15 @@ public class FareCalculation {
 
     private static final String TAG = "FareCalculation";
 
-    public static float calculatreDurationInHourFromSeconds(String duration){
+    public static float calculatreDurationInHourFromSeconds(Integer duration){
 
         float dur_in_hr;
-        dur_in_hr = Math.abs(Integer.valueOf(duration) * 1 / (60 * 60));
+        dur_in_hr = Math.abs(duration * 1 / (60 * 60));
 
         return dur_in_hr;
     }
 
-    public static float calculatorDistanceInKilometers(String distance){
+    public static float calculatorDistanceInKilometers(Integer distance){
 
         float distanceKm = Float.valueOf(distance) / 1000;
 

@@ -26,6 +26,7 @@ import com.directions.route.AbstractRouting;
 import com.directions.route.Route;
 import com.directions.route.Routing;
 import com.directions.route.RoutingListener;
+import com.directions.sample.utils.FareCalculation;
 import com.directions.sample.utils.Util;
 import com.directions.sample.volley.DistanceResponse;
 import com.google.android.gms.common.ConnectionResult;
@@ -89,8 +90,6 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
     private Button fareButton;
 
 
-    private DistanceResponse distanceResponse;
-
     private TextView estimated_fare, tvTitle, tvDistance, tvTime;
     private EditText mParamedicCount, mParamedicHourCost, mKilometerCost, mAdditionalTime;
     private Switch switchIsRetrun;
@@ -127,6 +126,8 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
         mKilometerCost = (EditText) findViewById(R.id.edit3);
         mAdditionalTime = (EditText) findViewById(R.id.edit4);
         switchIsRetrun= (Switch) findViewById(R.id.switchIsReturn);
+
+        initDefaultValues();
 
         estimated_fare = (TextView) findViewById(R.id.estimated_fare);
         tvTitle = (TextView) findViewById(R.id.tvTitle);
@@ -293,6 +294,7 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
                 final PlaceAutoCompleteAdapter.PlaceAutocomplete item = mAdapter.getItem(position);
                 final String placeId = String.valueOf(item.placeId);
                 Log.i(LOG_TAG, "Autocomplete item selected: " + item.description);
+                fromAddress = item.description.toString();
 
             /*
              Issue a request to the Places Geo Data API to retrieve a Place object with additional
@@ -325,6 +327,7 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
                 final PlaceAutoCompleteAdapter.PlaceAutocomplete item = mAdapter.getItem(position);
                 final String placeId = String.valueOf(item.placeId);
                 Log.i(LOG_TAG, "Autocomplete item selected: " + item.description);
+                toAddress = item.description.toString();
 
             /*
              Issue a request to the Places Geo Data API to retrieve a Place object with additional
@@ -400,11 +403,90 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
 
     }
 
+    private void initDefaultValues(){
+
+        mParamedicCount.setText("1");
+        mParamedicHourCost.setText("20");
+        mKilometerCost.setText("2.5");
+        mAdditionalTime.setText("0");
+
+        switchIsRetrun.setChecked(false);
+        switchIsRetrun.setTextOff("Nie");
+        switchIsRetrun.setTextOn("Tak");
+
+
+    }
+
+    private void setData(Route route) {
+
+        // Calculating the total amount from the base price
+
+        float dur_in_hr = FareCalculation.calculatreDurationInHourFromSeconds(route.getDurationValue());
+        float dist_in_km = FareCalculation.calculatorDistanceInKilometers(route.getDistanceValue());
+
+        int paramedicsCount = Integer.valueOf(mParamedicCount.getText().toString());
+        float paramedicHourCost = Float.valueOf(mParamedicHourCost.getText().toString());
+        float kilometerCost = Float.valueOf(mKilometerCost.getText().toString());
+        int additionalTime = Integer.valueOf(mAdditionalTime.getText().toString());
+
+        String estimatedFare = FareCalculation.estimatedFare(dur_in_hr, dist_in_km,paramedicsCount,paramedicHourCost,kilometerCost, additionalTime, switchIsRetrun.isChecked() );
+
+
+        tvDistance.setVisibility(View.VISIBLE);
+        tvDistance.setText("Szacowany dystans: " + route.getDistanceText());
+
+        tvTime.setVisibility(View.VISIBLE);
+        tvTime.setText("Szacowany czas jazdy: " + route.getDurationText());
+
+        ShowFare(estimatedFare);
+        scrollViewContent.fullScroll(View.FOCUS_DOWN);
+
+    }
+
+    private void ShowFare(String fare) {
+
+        // visible the amount's text view and set the estimate fare to the text view.
+        tvTitle.setVisibility(View.VISIBLE);
+        estimated_fare.setVisibility(View.VISIBLE);
+        estimated_fare.setText(fare);
+
+
+    }
+
 
     @OnClick(R.id.fab)
     public void sendRequest()
     {
-        if(Util.Operations.isOnline(this))
+
+        mParamedicCount.setError(null);
+        mParamedicHourCost.setError(null);
+        mKilometerCost.setError(null);
+        mAdditionalTime.setError(null);
+
+        boolean error = false;
+
+        if (mParamedicCount.getText().toString().length() == 0) {
+            mParamedicCount.setError("Pole nie może być puste");
+            error = true;
+        }
+
+        if (mParamedicHourCost.getText().toString().length() == 0) {
+            mParamedicHourCost.setError("Pole nie może być puste");
+            error = true;
+        }
+
+        if (mKilometerCost.getText().toString().length() == 0) {
+            mKilometerCost.setError("Pole nie może być puste");
+            error = true;
+        }
+
+        if (mAdditionalTime.getText().toString().length() == 0) {
+            mAdditionalTime.setError("Pole nie może być puste");
+            error = true;
+        }
+
+
+        if(Util.Operations.isOnline(this) && !error)
         {
             route();
         }
@@ -415,6 +497,8 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
         }
     }
 
+
+
     public void route()
     {
         if(start==null || end==null)
@@ -423,7 +507,7 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
             {
                 if(starting.getText().length()>0)
                 {
-                    starting.setError("Choose location from dropdown.");
+                    starting.setError("Wybierz lokacje z listy.");
                 }
                 else
                 {
@@ -500,8 +584,10 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
             Polyline polyline = map.addPolyline(polyOptions);
             polylines.add(polyline);
 
+            setData(route.get(i));
 
-            Toast.makeText(getApplicationContext(),"Trasa "+ (i+1) +": dystans - "+ route.get(i).getDistanceValue()+": czas - "+ route.get(i).getDurationValue(),Toast.LENGTH_SHORT).show();
+
+            Toast.makeText(getApplicationContext(),"Trasa "+ (i+1) +": dystans - "+ route.get(i).getDistanceText()+": czas - "+ route.get(i).getDurationText(),Toast.LENGTH_SHORT).show();
         }
 
         // Start marker

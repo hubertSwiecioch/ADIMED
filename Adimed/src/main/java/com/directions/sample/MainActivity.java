@@ -558,6 +558,7 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
                     .withListener(this)
                     .alternativeRoutes(true)
                     .waypoints(start, end)
+                    .language("PL")
                     .build();
             routing.execute();
         }

@@ -35,9 +35,9 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ViewHold
         Log.i(TAG, "listAdapter" + routeResultsItemList.get(0).getFareCost());
 
         //Setting text view title
-        customViewHolder.tvFareCost.setText("Całkowity koszt: " + routeItem.getFareCost());
-        customViewHolder.tvDistance.setText("Szacowany dystans: " + routeItem.getDistanceText());
-        customViewHolder.tvTime.setText("Szacowany czas przejazdu: " + routeItem.getDurationText());
+        customViewHolder.tvFareCost.setText(routeItem.getFareCost());
+        customViewHolder.tvDistance.setText(routeItem.getDistanceText());
+        customViewHolder.tvTime.setText(routeItem.getDurationText());
 
     }
 

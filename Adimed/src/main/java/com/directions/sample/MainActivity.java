@@ -638,6 +638,14 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
     }
 
     @Override
+    public void onBackPressed() {
+        if(mLayout.getPanelState().equals(PanelState.EXPANDED))
+            mLayout.setPanelState(PanelState.COLLAPSED);
+        else
+            super.onBackPressed();
+    }
+
+    @Override
     public void onRoutingCancelled() {
         Log.i(LOG_TAG, "Wyliczanie trasy zostało anulowane.");
     }

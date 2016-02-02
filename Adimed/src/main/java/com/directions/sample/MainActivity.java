@@ -1,5 +1,6 @@
 package com.directions.sample;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.location.Location;
 import android.location.LocationListener;
@@ -16,6 +17,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -84,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
     private PlaceAutoCompleteAdapter mAdapter;
     private ProgressDialog progressDialog;
     private ArrayList<Polyline> polylines;
-    private int[] colors = new int[]{R.color.primary_dark,R.color.primary,R.color.primary_light,R.color.primary_dark_material_light};
+    private int[] colors = new int[]{R.color.route_primary,R.color.route_green,R.color.route_green,R.color.route_green};
 
 
     private static final LatLngBounds BOUNDS_JAMAICA= new LatLngBounds(new LatLng(-57.965341647205726, 144.9987719580531),
@@ -511,6 +513,7 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
 
         if(Util.Operations.isOnline(this) && !error)
         {
+            hideSoftKeyboard(this);
             route();
         }
         else
@@ -518,6 +521,11 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
             Toast.makeText(this, "Brak połączenia z internetem", Toast.LENGTH_SHORT).show();
 
         }
+    }
+
+    public static void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager = (InputMethodManager)  activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
     }
 
 
@@ -601,11 +609,11 @@ public class MainActivity extends AppCompatActivity implements RoutingListener, 
         for (int i = 0; i <route.size(); i++) {
 
             //In case of more than 5 alternative routes
-            int colorIndex = i % colors.length;
+            int colorIndex = i;
 
             PolylineOptions polyOptions = new PolylineOptions();
             polyOptions.color(getResources().getColor(colors[colorIndex]));
-            polyOptions.width(10 + i * 3);
+            polyOptions.width(15 - i);
             polyOptions.addAll(route.get(i).getPoints());
             Polyline polyline = map.addPolyline(polyOptions);
             polylines.add(polyline);
